@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "debug - CUDA",
+			"type": "shell",
+			"command": "nvcc",
+			"args": ["-g", "-G", "${file}", "-o", "${fileDirname}/${fileBasenameNoExtension}"],
+			"problemMatcher": ["$nvcc"],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}
