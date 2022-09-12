@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "**** Installing Nvidia Docker runtime ****" && \
-curl https://get.docker.com | sh && sudo systemctl --now enable docker &&
+curl https://get.docker.com | sh && sudo systemctl --now enable docker && \
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
       && curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
       && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
@@ -32,4 +32,4 @@ code --install-extension ms-vscode-remote.remote-containers && \
 code --install-extension redhat.vscode-yaml && \
 code --install-extension NVIDIA.nsight-vscode-edition && \
 echo "GPU environment is ready!" && \
-echo "Installation complete" && \
+echo "Installation complete"
