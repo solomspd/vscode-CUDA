@@ -9,20 +9,11 @@ LABEL maintainer="solom"
 ARG DEBIAN_FRONTEND=noninteractive
 
 # environment settings
-ENV HOME="/config"
+ENV HOME="/home"
 
 RUN \
-  echo "**** install node repo ****" && \
-  apt-get update && \
-  apt-get install -y curl apt-utils && \
-  curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
-  echo 'deb https://deb.nodesource.com/node_14.x focal main' \
-    > /etc/apt/sources.list.d/nodesource.list && \
-  echo "**** install build dependencies ****" && \
-  apt-get install -y \
-    build-essential \
-    nodejs && \
   echo "**** install runtime dependencies ****" && \
+  apt-get update && \
   apt-get install -y \
     git \
     jq \
@@ -30,41 +21,23 @@ RUN \
     nano \
     net-tools \
     sudo && \
-  echo "**** install code-server ****" && \
-  if [ -z ${CODE_RELEASE+x} ]; then \
-    CODE_RELEASE=$(curl -sX GET https://api.github.com/repos/coder/code-server/releases/latest \
-    | awk '/tag_name/{print $4;exit}' FS='[""]' | sed 's|^v||'); \
-  fi && \
-  mkdir -p /app/code-server && \
-  curl -o \
-    /tmp/code-server.tar.gz -L \
-    "https://github.com/coder/code-server/releases/download/v${CODE_RELEASE}/code-server-${CODE_RELEASE}-linux-amd64.tar.gz" && \
-  tar xf /tmp/code-server.tar.gz -C \
-    /app/code-server --strip-components=1 && \
-  echo "**** patch 4.0.2 ****" && \
-  if [ "${CODE_RELEASE}" = "4.0.2" ] && [ "$(uname -m)" !=  "x86_64" ]; then \
-    cd /app/code-server && \
-    npm i --production @node-rs/argon2; \
-  fi && \
-  code --install-extension ms-vscode.cpptools && \
-  code --install-extension VisualStudioExptTeam.vscodeintellicode && \
-  code --install-extension NVIDIA.nsight-vscode-edition && \
-  echo "**** clean up ****" && \
-  apt-get purge --auto-remove -y \
-    build-essential \
-    nodejs && \
-  apt-get clean && \
-  rm -rf \
-    /config/* \
-    /tmp/* \
-    /var/lib/apt/lists/* \
-    /var/tmp/* \
-    /etc/apt/sources.list.d/nodesource.list
+  apt install -y nsight-systems nsight-compute && \
+  apt install -y openssh-server && \
+  service ssh start
+
+RUN sed -ri 's/#* *PermitEmptyPasswords no/PermitEmptyPasswords yes/' /etc/ssh/sshd_config
+RUN sed -ri 's/#* *PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -ri 's/^UsePAM yes/UsePAM no/' /etc/ssh/sshd_config
+
+RUN passwd -d root
 
 # add local files
 COPY /root /
-COPY /workspace /config/workspace
-COPY /README.md /config/workspace/README.md
+COPY /workspace /home/workspace
+COPY /README.md /home/workspace/README.md
 
 # ports and volumes
 EXPOSE 8443
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd","-D"]

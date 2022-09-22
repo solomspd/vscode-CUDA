@@ -1,18 +1,13 @@
 #!/bin/bash
-echo "**** Installing Nvidia Docker runtime ****" && \
-curl https://get.docker.com | sh && sudo systemctl --now enable docker && \
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
-      && curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
-      && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
-            sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
-            sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list && \
-sudo apt-get update && \
-sudo apt-get install -y nvidia-docker2 && \
-sudo systemctl restart docker && \
-echo "**** Installing GPU computing docker image ****" && \
-docker-compose up -d && \
+echo "**** fixing nvidia runtime ****"
+find . -type f -exec sudo sed -i '/developer\.download\.nvidia\.com\/compute\/cuda\/repos/d' {} && # remove most likely borken mirrors and keys
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb && # get new keyring
+sudo apt install ./cuda-keyring_1.0-1_all.deb && # install new keyring
+sudo apt update &&
+sudo apt install cuda-gdb-11-7 && # install latest version of the cuda debugger
+sudo apt remove nvidia-cuda-gdb && # default version is too old and borked
 echo "**** Setting up VScode on host machine ****" && \
-if ! command -v code &> /dev/null
+if ! command -v code &> /dev/null # if vscode is not installed, install it
 then
       sudo apt-get install wget gpg
       wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
@@ -31,5 +26,7 @@ code --install-extension ms-azuretools.vscode-docker && \
 code --install-extension ms-vscode-remote.remote-containers && \
 code --install-extension redhat.vscode-yaml && \
 code --install-extension NVIDIA.nsight-vscode-edition && \
+echo "Copying starter workspace" && \
+cp -r workspace ~/GPU-computing-workspace && \
 echo "GPU environment is ready!" && \
 echo "Installation complete"

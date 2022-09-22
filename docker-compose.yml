@@ -1,18 +1,16 @@
 ---
 version: "2.1"
 services:
-  code-server:
-    image: solomspd/auc-gpu-computing
-    container_name: code-server
+  cuda-starter:
+    image: solomspd/cuda-starter
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/London
+      - TZ=Africa/Cairo
       - DEFAULT_WORKSPACE=/config/workspace
-    volumes:
-      - /config:/config
     ports:
       - 8443:8443
+      - 22:22
     restart: unless-stopped
     deploy:
       resources:

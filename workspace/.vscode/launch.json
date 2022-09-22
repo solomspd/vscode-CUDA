@@ -8,7 +8,8 @@
 			"name": "CUDA C++: Launch",
 			"type": "cuda-gdb",
 			"request": "launch",
-			"program": "${workspaceFolder}/${fileBasenameNoExtension}",
+			"program": "${workspaceFolder}/${fileBasenameNoExtension}-debug",
+			"preLaunchTask": "debug - CUDA"
 		},
 		{
 			"name": "CUDA C++: Attach",

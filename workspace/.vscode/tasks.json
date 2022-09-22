@@ -5,7 +5,18 @@
 			"label": "debug - CUDA",
 			"type": "shell",
 			"command": "nvcc",
-			"args": ["-g", "-G", "${file}", "-o", "${fileDirname}/${fileBasenameNoExtension}"],
+			"args": ["-g", "-G", "${file}", "-o", "${fileDirname}/${fileBasenameNoExtension}-debug"],
+			"problemMatcher": ["$nvcc"],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+		},
+		{
+			"label": "build - CUDA",
+			"type": "shell",
+			"command": "nvcc",
+			"args": ["-O3", "${file}", "-o", "${fileDirname}/${fileBasenameNoExtension}-release"],
 			"problemMatcher": ["$nvcc"],
 			"group": {
 				"kind": "build",
