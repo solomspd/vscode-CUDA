@@ -1,12 +1,6 @@
 #!/bin/bash
-echo "**** fixing nvidia runtime ****"
-find . -type f -exec sudo sed -i '/developer\.download\.nvidia\.com\/compute\/cuda\/repos/d' {} && # remove most likely borken mirrors and keys
-wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb && # get new keyring
-sudo apt install ./cuda-keyring_1.0-1_all.deb && # install new keyring
-sudo apt update &&
-sudo apt install cuda-gdb-11-7 && # install latest version of the cuda debugger
-sudo apt remove nvidia-cuda-gdb && # default version is too old and borked
 echo "**** Setting up VScode on host machine ****" && \
+sudo sh -c 'echo 2 >/proc/sys/kernel/perf_event_paranoid' && \ # set higher paranoid level for deeper nsight profiling
 if ! command -v code &> /dev/null # if vscode is not installed, install it
 then
       sudo apt-get install wget gpg

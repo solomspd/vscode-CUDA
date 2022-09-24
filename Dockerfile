@@ -4,7 +4,7 @@ FROM nvidia/cuda:11.7.1-devel-ubuntu20.04
 # ARG BUILD_DATE
 # ARG VERSION
 # ARG CODE_RELEASE
-#LABEL build_version="version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+# LABEL build_version="version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="solom"
 ARG DEBIAN_FRONTEND=noninteractive
 
